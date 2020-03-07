@@ -23,12 +23,12 @@ class StringListInput(TextInput):
 
 
 class StringSetInput(TextInput):
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         if isinstance(value, six.string_types):
-            return super(StringSetInput, self).render(name, value)
+            return super(StringSetInput, self).render(name, value, renderer)
         else:
             rendered_value = django_prbac.csv.line_to_string(sorted(list(value)))
-            return super(StringSetInput, self).render(name, rendered_value)
+            return super(StringSetInput, self).render(name, rendered_value, renderer)
 
 
 class StringListFormField(CharField):
