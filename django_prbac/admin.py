@@ -36,6 +36,7 @@ class RoleAdmin(admin.ModelAdmin):
 
     def parameters__csv(self, instance):
         return django_prbac.csv.line_to_string(sorted(list(instance.parameters)))
+
     parameters__csv.short_description = 'Parameters'
     parameters__csv.admin_order_field = 'parameters'
 
