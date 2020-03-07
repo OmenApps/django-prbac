@@ -15,15 +15,8 @@ def parse_line(value, quotechar=None, **kwargs):
 
     quotechar = quotechar or '"'
 
-    if six.PY2:
-        quotechar = quotechar.encode('utf-8')
-
     for row in csv.reader([value], quotechar=quotechar, **kwargs):
-        if six.PY3:
-            return row  # Already unicode in Python 3, hooray!
-        else:
-            return [s.decode('utf-8') for s in row] # Always binary in Python 2, fooey!
-
+        return row
 
 def line_to_string(value, **kwargs):
     """
