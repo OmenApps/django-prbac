@@ -236,7 +236,7 @@ class Grant(ValidatingModel, models.Model):
     )
 
     to_role = models.ForeignKey(
-        _('Role'),
+        'Role',
         help_text=_('The super-role or permission being given'),
         related_name='members',
         on_delete=models.CASCADE,
