@@ -90,7 +90,7 @@ class Role(ValidatingModel, models.Model):
         default=set,
     )
 
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False, related_name="created_roles")
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False, blank=False, related_name="created_roles")
 
     created = models.DateTimeField(
         _("DateTime Created"), auto_now_add=True, help_text=_("When this item was first created.")
@@ -249,7 +249,7 @@ class Grant(ValidatingModel, models.Model):
         default=dict,
     )
 
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False, related_name="created_grants")
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False, blank=False, related_name="created_grants")
 
     created = models.DateTimeField(
         _("DateTime Created"), auto_now_add=True, help_text=_("When this item was first created.")
