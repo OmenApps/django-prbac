@@ -63,7 +63,7 @@ class Role(ValidatingModel, models.Model):
     if extensions_exist is not None:
         slug = models.AutoSlugField(
             _("Slug"), 
-            populate_from=["name"]
+            populate_from=["name"],
             max_length=256,
             help_text=_('The formal slug for this role, which should be unique. If not provided, it will be automatically filled.'),
             unique=True,
