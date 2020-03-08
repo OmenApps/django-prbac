@@ -45,7 +45,7 @@ class Role(ValidatingModel, models.Model):
     ROLES_BY_ID = "DJANGO_PRBAC_ROLES"
     _default_instance = lambda s:None
 
-    # Databaes fields
+    # Database fields
     # ---------------
 
     id = models.UUIDField(_("ID"), primary_key=True, default=uuid.uuid4, editable=False)
@@ -158,7 +158,7 @@ class Role(ValidatingModel, models.Model):
             roles = cache.get(self.ROLES_BY_ID)
         return roles.get(self.id, self)
 
-    def get_privileges(self, assignment):
+    def get_privileges(self, assignment=None):
         if not assignment:
             try:
                 return self._granted_privileges
