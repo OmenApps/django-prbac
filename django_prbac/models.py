@@ -2,15 +2,22 @@
 from __future__ import unicode_literals, absolute_import, print_function
 
 # Standard Library Imports
+import importlib
 import time
+import uuid
 import weakref
 
 # Django imports
 from django.db import models
 from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
 
 # External Library imports
 import jsonfield
+
+extensions_exist = importlib.util.find_spec("django_extensions")
+if extensions_exist is not None:
+    from django_extensions.db.fields import AutoSlugField
 
 # Local imports
 from django_prbac.fields import StringSetField
@@ -45,27 +52,52 @@ class Role(ValidatingModel, models.Model):
     # Databaes fields
     # ---------------
 
-    slug = models.CharField(
-        max_length=256,
-        help_text='The formal slug for this role, which should be unique',
-        unique=True,
-    )
+    id = models.UUIDField(_("ID"), primary_key=True, default=uuid.uuid4, editable=False)
 
     name = models.CharField(
+        _("Name"), 
         max_length=256,
-        help_text='The friendly name for this role to present to users; this need not be unique.',
+        help_text=_('The friendly name for this role to present to users; this need not be unique, but must not be blank.'),
     )
 
+    if extensions_exist is not None:
+        slug = models.AutoSlugField(
+            _("Slug"), 
+            populate_from=["name"]
+            max_length=256,
+            help_text=_('The formal slug for this role, which should be unique. If not provided, it will be automatically filled.'),
+            unique=True,
+        )
+    else:
+        slug = models.CharField(
+            _("Slug"), 
+            max_length=256,
+            help_text=_('The formal slug for this role, which should be unique.'),
+            unique=True,
+        )
+
     description = models.TextField(
-        help_text='A long-form description of the intended semantics of this role.',
+        _("Description"), 
+        help_text=_('A long-form description of the intended semantics of this role.'),
         blank=True,
         default='',
     )
 
     parameters = StringSetField(
-        help_text='A set of strings which are the parameters for this role. Entered as a JSON list.',
+        _("Parameters"), 
+        help_text=_('A set of strings which are the parameters for this role. Entered as a JSON list.'),
         blank=True,
         default=set,
+    )
+
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False, related_name="created_roles")
+
+    created = models.DateTimeField(
+        _("DateTime Created"), auto_now_add=True, help_text=_("When this item was first created.")
+    )
+
+    modified = models.DateTimeField(
+        _("DateTime Modified"), auto_now=True, help_text=_("When this item last updated.")
     )
 
     class Meta:
@@ -194,24 +226,37 @@ class Grant(ValidatingModel, models.Model):
     # Database Fields
     # ---------------
 
+    id = models.UUIDField(_("ID"), primary_key=True, default=uuid.uuid4, editable=False)
+
     from_role = models.ForeignKey(
         'Role',
-        help_text='The sub-role begin granted membership or permission',
+        help_text=_('The sub-role begin granted membership or permission'),
         related_name='memberships_granted',
         on_delete=models.CASCADE,
     )
 
     to_role = models.ForeignKey(
-        'Role',
-        help_text='The super-role or permission being given',
+        _('Role'),
+        help_text=_('The super-role or permission being given'),
         related_name='members',
         on_delete=models.CASCADE,
     )
 
     assignment = jsonfield.JSONField(
-        help_text='Assignment from parameters (strings) to values (any JSON-compatible value)',
+        _('Assignment'),
+        help_text=_('Assignment from parameters (strings) to values (any JSON-compatible value).'),
         blank=True,
         default=dict,
+    )
+
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False, related_name="created_grants")
+
+    created = models.DateTimeField(
+        _("DateTime Created"), auto_now_add=True, help_text=_("When this item was first created.")
+    )
+
+    modified = models.DateTimeField(
+        _("DateTime Modified"), auto_now=True, help_text=_("When this item last updated.")
     )
 
     class Meta:
