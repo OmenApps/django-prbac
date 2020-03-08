@@ -3,10 +3,13 @@
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
+import django_extensions.db.fields
 import django_prbac.fields
 import django_prbac.models
 import jsonfield.fields
 import uuid
+
+
 
 
 class Migration(migrations.Migration):
@@ -23,7 +26,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(help_text='The friendly name for this role to present to users; this need not be unique, but must not be blank.', max_length=256, verbose_name='Name')),
-                ('slug', models.CharField(help_text='The formal slug for this role, which should be unique.', max_length=256, unique=True, verbose_name='Slug')),
+                ('slug', django_extensions.db.fields.AutoSlugField(help_text='The formal slug for this role, which should be unique. If not provided, it will be automatically filled.', max_length=256, unique=True, verbose_name='Slug', populate_from=["name"])),
                 ('description', models.TextField(blank=True, default='', help_text='A long-form description of the intended semantics of this role.', verbose_name='Description')),
                 ('parameters', django_prbac.fields.StringSetField(blank=True, default=set, help_text='A set of strings which are the parameters for this role. Entered as a JSON list.', verbose_name='Parameters')),
                 ('created', models.DateTimeField(auto_now_add=True, help_text='When this item was first created.', verbose_name='DateTime Created')),

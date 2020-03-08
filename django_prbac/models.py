@@ -2,7 +2,6 @@
 from __future__ import unicode_literals, absolute_import, print_function
 
 # Standard Library Imports
-import importlib
 import time
 import uuid
 import weakref
@@ -14,10 +13,7 @@ from django.utils.translation import ugettext_lazy as _
 
 # External Library imports
 import jsonfield
-
-extensions_exist = importlib.util.find_spec("django_extensions")
-if extensions_exist is not None:
-    from django_extensions.db.fields import AutoSlugField
+from django_extensions.db.fields import AutoSlugField
 
 # Local imports
 from django_prbac.fields import StringSetField
@@ -60,21 +56,13 @@ class Role(ValidatingModel, models.Model):
         help_text=_('The friendly name for this role to present to users; this need not be unique, but must not be blank.'),
     )
 
-    if extensions_exist is not None:
-        slug = models.AutoSlugField(
-            _("Slug"), 
-            populate_from=["name"],
-            max_length=256,
-            help_text=_('The formal slug for this role, which should be unique. If not provided, it will be automatically filled.'),
-            unique=True,
-        )
-    else:
-        slug = models.CharField(
-            _("Slug"), 
-            max_length=256,
-            help_text=_('The formal slug for this role, which should be unique.'),
-            unique=True,
-        )
+    slug = AutoSlugField(
+        _("Slug"), 
+        populate_from=["name"],
+        max_length=256,
+        help_text=_('The formal slug for this role, which should be unique. If not provided, it will be automatically filled.'),
+        unique=True,
+    )
 
     description = models.TextField(
         _("Description"), 
